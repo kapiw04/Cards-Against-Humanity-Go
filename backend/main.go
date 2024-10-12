@@ -61,6 +61,12 @@ func getRandomBlackCards(k int) []Card {
 
 func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 	color := r.URL.Query().Get("color")
+	origin := r.Header.Get("Origin")
+	referer := r.Header.Get("Referer")
+	userAgent := r.Header.Get("User-Agent")
+
+	fmt.Printf("Request Details:\n- Origin: %s\n- Referer: %s\n- User-Agent: %s\n", origin, referer, userAgent)
+
 	k, err := strconv.Atoi(r.URL.Query().Get("k"))
 
 	if color == "" || err != nil {
@@ -88,6 +94,24 @@ func main() {
 	populateCards()
 
 	fmt.Println("Staring server at port :8080")
+
+	// mux := http.NewServeMux()
 	http.HandleFunc("/api/", kRandomCardsHandler)
-	http.ListenAndServe(":8080", nil)
+
+	http.ListenAndServe(":8080", corsMiddleware(http.DefaultServeMux))
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

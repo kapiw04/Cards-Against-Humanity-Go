@@ -23,7 +23,7 @@ var white_cards []Card
 var black_cards []Card
 
 func populateCards() {
-	db, err := gorm.Open(sqlite.Open("cah/cah_cards.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("cah_cards.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -87,6 +87,7 @@ func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	populateCards()
 
+	fmt.Println("Staring server at port :8080")
 	http.HandleFunc("/api/", kRandomCardsHandler)
 	http.ListenAndServe(":8080", nil)
 }

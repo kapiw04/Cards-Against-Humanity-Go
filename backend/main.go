@@ -7,16 +7,28 @@ import (
 	"strconv"
 )
 
-type Color string
-
-type Card struct {
-	ID    uint `gorm:"primaryKey"`
-	Text  string
-	Color string
+type StartGameRequest struct {
+	PlayersNumber int `json:"players_number"`
 }
 
-var white_cards []Card
-var black_cards []Card
+
+func startGameHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Println("Method not allowed")
+		return
+	}
+	
+	var start_game_request StartGameRequest	
+	err := json.NewDecoder(r.Body).Decode(&start_game_request)
+
+	if err != nil {
+		panic(err)
+	}
+
+	runGameLoop(game_manager_instance.number_of_players)
+	w.WriteHeader(http.StatusOK)
+}
 
 func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 	color := r.URL.Query().Get("color")
@@ -51,12 +63,12 @@ func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	populateCards()
-	startGameLoop()
-	
+
 	fmt.Println("Staring server at port :8080")
 
 	// mux := http.NewServeMux()
-	http.HandleFunc("/api/", kRandomCardsHandler) 
+	http.HandleFunc("/api", kRandomCardsHandler) 
+	http.HandleFunc("/start", startGameHandler)
 	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
 	if err != nil {
 		panic(err)

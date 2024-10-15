@@ -1,5 +1,7 @@
 services:
   backend:
+    depends_on: 
+      - redis
     build: ./backend/
     ports:
       - "8080:8080"
@@ -11,7 +13,6 @@ services:
       - "3000:3000"
     networks:
       - app-network
-
 networks:
   app-network:
     driver: bridge

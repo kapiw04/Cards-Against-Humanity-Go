@@ -8,6 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
+
+type Color string
+
+type 	Card struct {
+	ID    uint `gorm:"primaryKey"`
+	Text  string
+	Color string
+}
+
+var white_cards []Card
+var black_cards []Card
+
+func (card *Card) String() string {
+	return fmt.Sprintf("Card: %s", card.Text)
+}
+
 func populateCards() {
 	db := openDB()
 	db.Where("color = ?", "white").Find(&white_cards)

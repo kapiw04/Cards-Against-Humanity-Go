@@ -96,9 +96,11 @@ func main() {
 	fmt.Println("Staring server at port :8080")
 
 	// mux := http.NewServeMux()
-	http.HandleFunc("/api/", kRandomCardsHandler)
-
-	http.ListenAndServe(":8080", corsMiddleware(http.DefaultServeMux))
+	http.HandleFunc("/api/", kRandomCardsHandler) 
+	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func corsMiddleware(next http.Handler) http.Handler {

@@ -11,7 +11,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the database
-COPY cah/cah_cards.db ./
+COPY cah_cards.db ./
 
 # Copy the rest of the source code
 COPY *.go .

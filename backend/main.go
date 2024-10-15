@@ -3,12 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand/v2"
 	"net/http"
 	"strconv"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 type Color string
@@ -21,43 +17,6 @@ type Card struct {
 
 var white_cards []Card
 var black_cards []Card
-
-func populateCards() {
-	db, err := gorm.Open(sqlite.Open("cah_cards.db"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	db.Where("color = ?", "white").Find(&white_cards)
-	db.Where("color = ?", "black").Find(&black_cards)
-}
-
-func getRandomWhiteCards(k int) []Card {
-	cards_len := len(white_cards)
-	rand.Shuffle(cards_len, func(i, j int) {
-		white_cards[i], white_cards[j] = white_cards[j], white_cards[i]
-	})
-
-	if k > cards_len {
-		k = cards_len
-		fmt.Println("WARNING: provided k was greater than cards length")
-	}
-
-	return white_cards[:k+1]
-}
-
-func getRandomBlackCards(k int) []Card {
-	cards_len := len(black_cards)
-	rand.Shuffle(cards_len, func(i, j int) {
-		black_cards[i], black_cards[j] = black_cards[j], black_cards[i]
-	})
-
-	if k > cards_len {
-		k = cards_len
-		fmt.Println("WARNING: provided k was greater than cards length")
-	}
-
-	return black_cards[:k]
-}
 
 func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 	color := r.URL.Query().Get("color")
@@ -92,7 +51,8 @@ func kRandomCardsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	populateCards()
-
+	startGameLoop()
+	
 	fmt.Println("Staring server at port :8080")
 
 	// mux := http.NewServeMux()

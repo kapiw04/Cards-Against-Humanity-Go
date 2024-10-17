@@ -1,22 +1,19 @@
 package main
 
 import (
-	"fmt"
+	"strconv"
 	"sync"
 )
 
 type GameManager struct {
-	number_of_players int
-	players           []Player
+	Number_of_players int
+	Players           map[string]*Player
 }
 
 type Player struct {
-	name string
-	hand []Card
-}
-
-func (player *Player) String() string {
-	return fmt.Sprintf("%s: %v", player.name, player.hand)
+	ID string
+	// Conn *websocket.Conn
+	Hand []Card
 }
 
 var game_manager_instance *GameManager
@@ -24,7 +21,9 @@ var once sync.Once
 
 func New() *GameManager {
 	once.Do(func() {
-		game_manager_instance = &GameManager{}
+		game_manager_instance = &GameManager{
+			Players: make(map[string]*Player),
+		}
 	})
 
 	return game_manager_instance
@@ -32,30 +31,33 @@ func New() *GameManager {
 
 func cleanGameManager() {
 	game_manager := New()
-	game_manager.number_of_players = 0
-	game_manager.players = []Player{}
+	game_manager.Number_of_players = 0
+	game_manager.Players = make(map[string]*Player)
 }
 
 func prepareGameManager(number_of_players int) {
 	cleanGameManager()
 	game_manager := New()
-	game_manager.number_of_players = number_of_players
+	game_manager.Number_of_players = number_of_players
+	game_manager.Players = make(map[string]*Player, number_of_players)
 }
 
 func startGame() {
-	game_manager := game_manager_instance
-	for i := 0; i < game_manager.number_of_players; i++ {
-		player := Player{}
+	for i := 0; i < game_manager_instance.Number_of_players; i++ {
+		player := &Player{
+			ID:   "player" + strconv.Itoa(i),
+			Hand: []Card{},
+		}
 		player.init()
-		game_manager.players = append(game_manager.players, player)
+		game_manager_instance.Players[player.ID] = player
 	}
 }
 
 func (player *Player) init() {
-	player.hand = getRandomWhiteCards(5)
+	player.Hand = getRandomWhiteCards(5)
 }
 
-func runGameLoop (num_players int) {
+func runGameLoop(num_players int) {
 	prepareGameManager(num_players)
 	startGame()
 }

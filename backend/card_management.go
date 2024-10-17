@@ -8,10 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type Color string
 
-type 	Card struct {
+type Card struct {
 	ID    uint `gorm:"primaryKey"`
 	Text  string
 	Color string
@@ -31,7 +30,7 @@ func populateCards() {
 }
 
 func openDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("cah_cards.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("cah/cah_cards.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

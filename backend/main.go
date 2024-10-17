@@ -11,22 +11,21 @@ type StartGameRequest struct {
 	PlayersNumber int `json:"players_number"`
 }
 
-
 func startGameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Println("Method not allowed")
 		return
 	}
-	
-	var start_game_request StartGameRequest	
+
+	var start_game_request StartGameRequest
 	err := json.NewDecoder(r.Body).Decode(&start_game_request)
 
 	if err != nil {
 		panic(err)
 	}
 
-	runGameLoop(game_manager_instance.number_of_players)
+	runGameLoop(game_manager_instance.Number_of_players)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -67,8 +66,9 @@ func main() {
 	fmt.Println("Staring server at port :8080")
 
 	// mux := http.NewServeMux()
-	http.HandleFunc("/api", kRandomCardsHandler) 
+	http.HandleFunc("/api", kRandomCardsHandler)
 	http.HandleFunc("/start", startGameHandler)
+	http.HandleFunc("/ws", websocketHandler)
 	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
 	if err != nil {
 		panic(err)

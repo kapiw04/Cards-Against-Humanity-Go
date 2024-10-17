@@ -95,7 +95,6 @@ func writePlayersHand(player Player) {
 		Cards: make([]CardJSON, len(player.Hand)),
 	}
 	for i, card := range player.Hand {
-		fmt.Println(card)
 		handJSON.Cards[i] = CardJSON(card)
 	}
 

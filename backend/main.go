@@ -19,7 +19,7 @@ func startGameHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	populateCards()
 
-	fmt.Println("Staring server at port :8080")
+	fmt.Println("Staring server at http://localhost:8080")
 
 	http.HandleFunc("/start", startGameHandler)
 	http.HandleFunc("/ws", websocketHandler)

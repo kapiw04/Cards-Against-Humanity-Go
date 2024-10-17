@@ -48,7 +48,6 @@ func disconnectPlayer(conn *websocket.Conn) {
 			break
 		}
 	}
-	fmt.Printf("Player with ID %s has left.\n", strings.Split(conn.RemoteAddr().String(), ":")[1])
 }
 
 func websocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +95,6 @@ func writePlayersHand(player Player) {
 		Cards: make([]CardJSON, len(player.Hand)),
 	}
 	for i, card := range player.Hand {
-		fmt.Println(card) // BUG: empty card
 		handJSON.Cards[i] = CardJSON(card)
 	}
 
@@ -119,8 +117,7 @@ func broadcastMessage(message Message) {
 	for _, player := range connected_players {
 		msg, err := json.Marshal(message)
 		if err != nil {
-			fmt.Println("Error marshaling message:", err)
-			continue
+			panic(err)
 		}
 		player.Conn.WriteMessage(websocket.TextMessage, msg)
 	}

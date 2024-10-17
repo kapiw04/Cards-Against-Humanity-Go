@@ -15,8 +15,7 @@ type Player struct {
 
 func startGame() {
 	fmt.Println("Started game with " + strconv.Itoa(len(connected_players)) + " players.")
-	for i, player := range connected_players {
-		fmt.Println("Player " + strconv.Itoa(i) + " has ID " + player.ID)
+	for i := range connected_players {
 		connected_players[i].Hand = getRandomWhiteCards(5)
 	}
 }

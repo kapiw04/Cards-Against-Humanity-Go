@@ -1,7 +1,5 @@
 services:
   backend:
-    depends_on: 
-      - redis
     build: ./backend/
     ports:
       - "8080:8080"

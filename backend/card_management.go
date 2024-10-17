@@ -16,6 +16,16 @@ type Card struct {
 	Color string
 }
 
+type CardJSON struct {
+	ID    uint   `json:"id"`
+	Text  string `json:"text"`
+	Color string `json:"color"`
+}
+
+type HandJSON struct {
+	Cards []CardJSON `json:"cards"`
+}
+
 var white_cards []Card
 var black_cards []Card
 
@@ -48,7 +58,10 @@ func getRandomWhiteCards(k int) []Card {
 		fmt.Println("WARNING: provided k was greater than cards length")
 	}
 
-	return white_cards[:k]
+	hand := white_cards[:k]
+	white_cards = white_cards[k:]
+
+	return hand
 }
 
 func getRandomBlackCards(k int) []Card {
@@ -62,5 +75,8 @@ func getRandomBlackCards(k int) []Card {
 		fmt.Println("WARNING: provided k was greater than cards length")
 	}
 
-	return black_cards[:k]
+	hand := black_cards[:k]
+	black_cards = black_cards[k:]
+
+	return hand
 }

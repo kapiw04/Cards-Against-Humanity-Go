@@ -85,8 +85,9 @@ func reader(conn *websocket.Conn) {
 					break
 				}
 			}
+		case "GetBlackCard":
+			writeBlackCard()
 		}
-
 	}
 }
 
@@ -111,6 +112,17 @@ func writePlayersHand(player Player) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func writeBlackCard() {
+	cardJSON := CardJSON(currentBlackCard)
+
+	message := &Message{
+		Type:    "SendBlackCard",
+		Content: cardJSON,
+	}
+
+	broadcastMessage(*message)
 }
 
 func broadcastMessage(message Message) {

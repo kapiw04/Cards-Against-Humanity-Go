@@ -20,6 +20,7 @@ type Message struct {
 }
 
 var connected_players []Player
+var played_cards []CardPlayedJSON
 
 func connectPlayer(conn *websocket.Conn) {
 	ID := strings.Split(conn.RemoteAddr().String(), ":")[1]
@@ -87,6 +88,12 @@ func reader(conn *websocket.Conn) {
 			}
 		case "GetBlackCard":
 			writeBlackCard()
+
+		case "PlayCard":
+			handleCardPlayed(conn, message)
+
+		case "GetAllCards":
+			writeAllPlayedCards()
 		}
 	}
 }
@@ -133,4 +140,50 @@ func broadcastMessage(message Message) {
 		}
 		player.Conn.WriteMessage(websocket.TextMessage, msg)
 	}
+}
+
+func handleCardPlayed(conn *websocket.Conn, message Message) {
+	var card Card
+	println(message.Content)
+	content, ok := message.Content.([]byte)
+	if !ok {
+		panic("Error converting content to JSON")
+	}
+	err := json.Unmarshal(content, &card)
+	if err != nil {
+		panic(err)
+	}
+	cardPlayed := &CardPlayedJSON{
+		Text:       card.Text,
+		OwnersConn: conn,
+	}
+	for i, player := range connected_players {
+		if player.Conn == conn {
+			connected_players[i].Hand = append(connected_players[i].Hand[:i], connected_players[i].Hand[i+1:]...)
+			break
+		}
+	}
+	played_cards = append(played_cards, *cardPlayed)
+	checkIfAllPlayed()
+}
+
+func checkIfAllPlayed() {
+	if len(played_cards) == len(connected_players) {
+		message := &Message{
+			Type:    "AllPlayed",
+			Content: "All players have played",
+		}
+		broadcastMessage(*message)
+	}
+}
+
+func writeAllPlayedCards() {
+	playedCards := &PlayedCardsJSON{played_cards}
+
+	message := &Message{
+		Type:    "SendAllPlayedCards",
+		Content: playedCards,
+	}
+
+	broadcastMessage(*message)
 }

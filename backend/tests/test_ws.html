@@ -9,11 +9,15 @@
     <h1>WebSocket Test</h1>
     <button id="getHand">Get Hand</button>
     <button id="getBlackCard">Get Black Card</button>
+    <button id="playCard">Play Card</button>
+    <button id="getAllPlayedCards">Get All Played Cards</button>
     <ul id="messages"></ul>
 
     <script>
         const ws = new WebSocket("ws://localhost:8080/ws"); 
         const messageList = document.getElementById("messages");
+
+        let card = {};
 
         ws.onopen = () => {
             console.log("Connected to WebSocket server");
@@ -23,6 +27,9 @@
             const msg = document.createElement("li");
             msg.textContent = `Received: ${event.data}`;
             messageList.appendChild(msg);
+            if (event.Type == "GetHand"){
+                card = JSON.parse(event)[0];
+            }
         };
 
         ws.onclose = () => {
@@ -43,6 +50,20 @@
             ws.send(JSON.stringify(message));
         });
 
+        document.getElementById("playCard").addEventListener("click", () => {
+            const message = {
+                Type: "PlayCard",
+                Content: card
+            };
+            ws.send(JSON.stringify(message));
+        });
+
+        document.getElementById("getAllPlayedCards").addEventListener("click", () => {
+            const message = {
+                Type: "GetAllCards"
+            };
+            ws.send(JSON.stringify(message));
+        });
     </script>
 </body>
 </html>

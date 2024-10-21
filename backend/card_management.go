@@ -11,32 +11,10 @@ import (
 type Color string
 
 type Card struct {
-	// card format stored in database
 	ID    uint `gorm:"primaryKey"`
 	Text  string
 	Color string
 }
-
-// type CardJSON struct {
-// 	// card format handled to player
-// 	ID    uint   `json:"id"`
-// 	Text  string `json:"text"`
-// 	Color string `json:"color"`
-// }
-
-// type CardPlayedJSON struct {
-// 	// card format received when player plays a card - it's assumed it's a white card
-// 	Text       string          `json:"text"`
-// 	OwnersConn *websocket.Conn `json:"owner"`
-// }
-
-// type HandJSON struct {
-// 	Cards []CardJSON `json:"cards"`
-// }
-
-// type PlayedCardsJSON struct {
-// 	CardsPlayed []CardPlayedJSON `json:"played_cards"`
-// }
 
 var white_cards []Card
 var black_cards []Card

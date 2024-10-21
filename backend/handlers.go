@@ -36,26 +36,26 @@ func getBlackCardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CardPlayedHandler(w http.ResponseWriter, r *http.Request) {
-	cardIndex, err := strconv.Atoi(r.Header.Get("CardIndex"))
+	card_index, err := strconv.Atoi(r.Header.Get("CardIndex"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		panic(err)
 	}
-	player, playerIndex, err := getPlayerFromAddr(strings.Split(r.RemoteAddr, ":")[0])
+	player, player_index, err := getPlayerFromAddr(strings.Split(r.RemoteAddr, ":")[0])
 	if err != nil {
 		w.WriteHeader(http.StatusForbidden)
 		panic(err)
 	}
-	if cardIndex < 0 || len(player.Hand) <= cardIndex {
+	if card_index < 0 || len(player.Hand) <= card_index {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	card := player.Hand[cardIndex]
+	card := player.Hand[card_index]
 
-	connected_players[playerIndex].Hand = append(player.Hand[:cardIndex],
-		player.Hand[cardIndex+1:]...) // remove card from hand
+	connected_players[player_index].Hand = append(player.Hand[:card_index],
+		player.Hand[card_index+1:]...) // remove card from hand
 
-	played_cards[card] = connected_players[playerIndex]
+	played_cards[card] = connected_players[player_index]
 	fmt.Fprintf(w, "Card played successfully")
 	w.WriteHeader(http.StatusAccepted)
 }

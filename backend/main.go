@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/hand", getHandHandler)
 	http.HandleFunc("/ws", websocketHandler)
 	http.HandleFunc("/black-card", getBlackCardHandler)
-	http.HandleFunc("/play-card", CardPlayedHandler)
+	http.HandleFunc("/play-card", cardPlayedHandler)
 	http.HandleFunc("/played-cards", getAllPlayedCardsHandler)
 	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
 	if err != nil {

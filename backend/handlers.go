@@ -35,7 +35,7 @@ func getBlackCardHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(currentBlackCard)
 }
 
-func CardPlayedHandler(w http.ResponseWriter, r *http.Request) {
+func cardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 	card_index, err := strconv.Atoi(r.Header.Get("CardIndex"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -56,20 +56,23 @@ func CardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 		player.Hand[card_index+1:]...) // remove card from hand
 
 	played_cards[card] = connected_players[player_index]
-	fmt.Fprintf(w, "Card played successfully")
+	if checkIfAllPlayed() {
+		fmt.Println("Ready to move to round 2")
+	}
+
 	w.WriteHeader(http.StatusAccepted)
 }
 
 func getAllPlayedCardsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	keys := make([]Card, len(played_cards))
-	players := make([]Player, len(played_cards))
+	keys := make([]Card, 0, len(played_cards)) // why has len 1
+	playerAddresses := make([]string, 0, len(played_cards))
 
 	for k, v := range played_cards {
 		keys = append(keys, k)
-		players = append(players, v)
+		playerAddresses = append(playerAddresses, v.Addr)
 	}
 	json.NewEncoder(w).Encode(keys)
-	json.NewEncoder(w).Encode(players)
+	json.NewEncoder(w).Encode(playerAddresses)
 }

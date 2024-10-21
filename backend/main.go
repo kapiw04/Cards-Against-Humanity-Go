@@ -22,7 +22,11 @@ func main() {
 	fmt.Println("Staring server at http://localhost:8080")
 
 	http.HandleFunc("/start", startGameHandler)
+	http.HandleFunc("/hand", getHandHandler)
 	http.HandleFunc("/ws", websocketHandler)
+	http.HandleFunc("/black-card", getBlackCardHandler)
+	http.HandleFunc("/play-card", CardPlayedHandler)
+	http.HandleFunc("/played-cards", getAllPlayedCardsHandler)
 	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
 	if err != nil {
 		panic(err)

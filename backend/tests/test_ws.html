@@ -7,62 +7,89 @@
 </head>
 <body>
     <h1>WebSocket Test</h1>
-    <button id="getHand">Get Hand</button>
-    <button id="getBlackCard">Get Black Card</button>
-    <button id="playCard">Play Card</button>
-    <button id="getAllPlayedCards">Get All Played Cards</button>
-    <ul id="messages"></ul>
+    <button id="connectBtn">Connect</button>
+    <button id="disconnectBtn" disabled>Disconnect</button>
+    <div id="status">Status: Disconnected</div>
+
+    <input type="text" id="messageInput" placeholder="Enter message" disabled />
+    <button id="sendMessageBtn" disabled>Send Message</button>
+
+    <div id="messages"></div>
 
     <script>
-        const ws = new WebSocket("ws://localhost:8080/ws"); 
-        const messageList = document.getElementById("messages");
-
-        let card = {};
-
-        ws.onopen = () => {
-            console.log("Connected to WebSocket server");
+        console.log = function(message) {
+            const logDiv = document.createElement('div');
+            logDiv.textContent = message;
+            document.body.appendChild(logDiv);
         };
 
-        ws.onmessage = (event) => {
-            const msg = document.createElement("li");
-            msg.textContent = `Received: ${event.data}`;
-            messageList.appendChild(msg);
-            if (event.Type == "GetHand"){
-                card = JSON.parse(event)[0];
+        let ws;
+
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const messageInput = document.getElementById('messageInput');
+        const statusDiv = document.getElementById('status');
+        const messagesDiv = document.getElementById('messages');
+
+        function updateStatus(message) {
+            statusDiv.textContent = 'Status: ' + message;
+        }
+
+        function appendMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+        }
+
+        connectBtn.addEventListener('click', () => {
+            ws = new WebSocket('ws://192.168.0.103:8080/ws');  // Replace with your server's IP
+
+            ws.onopen = () => {
+                updateStatus('Connected');
+                appendMessage('WebSocket connection established.');
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendMessageBtn.disabled = false;
+                messageInput.disabled = false;
+            };
+
+            ws.onmessage = (event) => {
+                appendMessage('Received: ' + event.data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateStatus('Error');
+                appendMessage('WebSocket error: ' + error);
+            };
+
+            ws.onclose = () => {
+                updateStatus('Disconnected');
+                appendMessage('WebSocket connection closed.');
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendMessageBtn.disabled = true;
+                messageInput.disabled = true;
+            };
+        });
+
+        disconnectBtn.addEventListener('click', () => {
+            if (ws) {
+                ws.close();
             }
-        };
-
-        ws.onclose = () => {
-            console.log("Disconnected from WebSocket server");
-        };
-
-        document.getElementById("getHand").addEventListener("click", () => {
-            const message = {
-                Type: "GetHand"
-            };
-            ws.send(JSON.stringify(message));
         });
 
-        document.getElementById("getBlackCard").addEventListener("click", () => {
-            const message = {
-                Type: "GetBlackCard"
-            };
-            ws.send(JSON.stringify(message));
-        });
-
-        document.getElementById("playCard").addEventListener("click", () => {
-            const message = {
-                Type: "PlayCard",
-                Content: card
-            };
-            ws.send(JSON.stringify(message));
-        });
-
-        document.getElementById("getAllPlayedCards").addEventListener("click", () => {
-            const message = {
-                Type: "GetAllCards"
-            };
-            ws.send(JSON.stringify(message));
+        sendMessageBtn.addEventListener('click', () => {
+            const messageContent = messageInput.value;
+            if (messageContent && ws && ws.readyState === WebSocket.OPEN) {
+                const message = JSON.stringify({
+                    Type: "Test",
+                    Content: messageContent
+                });
+                ws.send(message);
+                appendMessage('Sent: ' + message);
+            }
         });
     </script>
 </body>

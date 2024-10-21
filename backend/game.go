@@ -8,7 +8,7 @@ import (
 )
 
 type Player struct {
-	ID   string
+	Addr string
 	Conn *websocket.Conn
 	Hand []Card
 }
@@ -21,6 +21,7 @@ func startGame() {
 		connected_players[i].Hand = getRandomWhiteCards(5)
 	}
 
+	played_cards = make(map[Card]Player, len(connected_players))
 	currentBlackCard = getRandomBlackCards(1)[0]
 }
 

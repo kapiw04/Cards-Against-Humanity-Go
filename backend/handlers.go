@@ -28,6 +28,11 @@ func startGameHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Method not allowed")
 		return
 	}
+	if !strings.HasPrefix(r.RemoteAddr, "127.0.0.1") && !strings.HasPrefix(r.RemoteAddr, "::1") {
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("Forbidden"))
+		return
+	}
 
 	runGameLoop()
 	w.WriteHeader(http.StatusOK)

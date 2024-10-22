@@ -17,11 +17,35 @@ func getPlayerFromAddr(addr string) (*Player, int, error) {
 	return nil, -1, fmt.Errorf("Player with address %s not found", addr)
 }
 
+// @Summary Start the game
+// @Description Start the game
+// @Tags game
+// @Success 200 {string} string "OK"
+// @Router /start [post]
+func startGameHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Println("Method not allowed")
+		return
+	}
+
+	runGameLoop()
+	w.WriteHeader(http.StatusOK)
+}
+
+// @Summary Get Hand of the player
+// @Description Get the hand of the player
+// @Tags player
+// @Produce json
+// @Success 200 {object} []Card
+// @Failure 403 {string} string "Forbidden"
+// @Router /hand [get]
 func getHandHandler(w http.ResponseWriter, r *http.Request) {
 	player, _, err := getPlayerFromAddr(strings.Split(r.RemoteAddr, ":")[0])
 	if err != nil {
 		w.WriteHeader(http.StatusForbidden)
-		panic(err)
+		w.Write([]byte("Forbidden"))
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -29,12 +53,26 @@ func getHandHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(player.Hand)
 }
 
+// @Summary Get current black card
+// @Description Retrieve the current black card
+// @Tags game
+// @Produce json
+// @Success 200 {object} Card
+// @Router /blackcard [get]
 func getBlackCardHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(currentBlackCard)
 }
 
+// @Summary Player plays a card
+// @Description Play a card by providing the card index in the header
+// @Tags game
+// @Param CardIndex header int true "Index of the card to play"
+// @Success 202 {string} string "Card accepted"
+// @Failure 400 {string} string "Bad request"
+// @Failure 403 {string} string "Forbidden"
+// @Router /card/play [post]
 func cardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 	card_index, err := strconv.Atoi(r.Header.Get("CardIndex"))
 	if err != nil {
@@ -63,6 +101,12 @@ func cardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
+// @Summary Get all played cards
+// @Description Retrieve all the cards that have been played
+// @Tags game
+// @Produce json
+// @Success 200 {array} Card
+// @Router /cards/played [get]
 func getAllPlayedCardsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

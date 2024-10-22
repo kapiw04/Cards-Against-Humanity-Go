@@ -8,9 +8,10 @@ import (
 )
 
 type Player struct {
-	Addr string
-	Conn *websocket.Conn
-	Hand []Card
+	Addr   string
+	Conn   *websocket.Conn
+	Hand   []Card
+	IsHost bool
 }
 
 var currentBlackCard Card

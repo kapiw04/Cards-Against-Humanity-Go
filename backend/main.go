@@ -3,18 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	_ "github.com/kapiw04/go-app/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
-
-func startGameHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Println("Method not allowed")
-		return
-	}
-
-	runGameLoop()
-	w.WriteHeader(http.StatusOK)
-}
 
 func main() {
 	populateCards()
@@ -27,6 +19,9 @@ func main() {
 	http.HandleFunc("/black-card", getBlackCardHandler)
 	http.HandleFunc("/play-card", cardPlayedHandler)
 	http.HandleFunc("/played-cards", getAllPlayedCardsHandler)
+
+	http.Handle("/swagger/", httpSwagger.WrapHandler)
+
 	err := http.ListenAndServe("0.0.0.0:8080", corsMiddleware(http.DefaultServeMux))
 	if err != nil {
 		panic(err)

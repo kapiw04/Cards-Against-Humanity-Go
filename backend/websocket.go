@@ -27,6 +27,7 @@ func connectPlayer(conn *websocket.Conn) {
 		strings.Split(conn.RemoteAddr().String(), ":")[0],
 		conn,
 		make([]Card, 5),
+		false,
 	}
 	connected_players = append(connected_players, *player)
 	message := &Message{
@@ -51,6 +52,12 @@ func disconnectPlayer(conn *websocket.Conn) {
 	}
 }
 
+// @Summary Connect a player via WebSocket
+// @Description Establish a WebSocket connection for a player.
+// @Tags websocket
+// @Success 101 {string} string "Switching Protocols"
+// @Failure 400 {string} string "Bad Request"
+// @Router /ws [get]
 func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 

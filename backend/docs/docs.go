@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/blackcard": {
+        "/black-card": {
             "get": {
                 "description": "Retrieve the current black card",
                 "produces": [
@@ -35,7 +35,36 @@ const docTemplate = `{
                 }
             }
         },
-        "/card/play": {
+        "/hand": {
+            "get": {
+                "description": "Get the hand of the player",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "player"
+                ],
+                "summary": "Get Hand of the player",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/main.Card"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/play-card": {
             "post": {
                 "description": "Play a card by providing the card index in the header",
                 "tags": [
@@ -73,7 +102,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cards/played": {
+        "/played-cards": {
             "get": {
                 "description": "Retrieve all the cards that have been played",
                 "produces": [
@@ -91,35 +120,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/main.Card"
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/hand": {
-            "get": {
-                "description": "Get the hand of the player",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "player"
-                ],
-                "summary": "Get Hand of the player",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.Card"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 }

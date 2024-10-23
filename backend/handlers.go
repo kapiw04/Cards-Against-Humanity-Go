@@ -28,7 +28,7 @@ func startGameHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Method not allowed")
 		return
 	}
-	if !strings.HasPrefix(r.RemoteAddr, "127.0.0.1") && !strings.HasPrefix(r.RemoteAddr, "::1") {
+	if !strings.HasPrefix(r.RemoteAddr, "127.0.0.1") && !strings.HasPrefix(r.RemoteAddr, "::1") && !strings.HasPrefix(r.RemoteAddr, "localhost") {
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte("Forbidden"))
 		return
@@ -63,7 +63,7 @@ func getHandHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags game
 // @Produce json
 // @Success 200 {object} Card
-// @Router /blackcard [get]
+// @Router /black-card [get]
 func getBlackCardHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -77,7 +77,7 @@ func getBlackCardHandler(w http.ResponseWriter, r *http.Request) {
 // @Success 202 {string} string "Card accepted"
 // @Failure 400 {string} string "Bad request"
 // @Failure 403 {string} string "Forbidden"
-// @Router /card/play [post]
+// @Router /play-card [post]
 func cardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 	card_index, err := strconv.Atoi(r.Header.Get("CardIndex"))
 	if err != nil {
@@ -111,7 +111,7 @@ func cardPlayedHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags game
 // @Produce json
 // @Success 200 {array} Card
-// @Router /cards/played [get]
+// @Router /played-cards [get]
 func getAllPlayedCardsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

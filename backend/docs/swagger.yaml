@@ -11,7 +11,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /blackcard:
+  /black-card:
     get:
       description: Retrieve the current black card
       produces:
@@ -24,7 +24,26 @@ paths:
       summary: Get current black card
       tags:
       - game
-  /card/play:
+  /hand:
+    get:
+      description: Get the hand of the player
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Card'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      summary: Get Hand of the player
+      tags:
+      - player
+  /play-card:
     post:
       description: Play a card by providing the card index in the header
       parameters:
@@ -49,7 +68,7 @@ paths:
       summary: Player plays a card
       tags:
       - game
-  /cards/played:
+  /played-cards:
     get:
       description: Retrieve all the cards that have been played
       produces:
@@ -64,25 +83,6 @@ paths:
       summary: Get all played cards
       tags:
       - game
-  /hand:
-    get:
-      description: Get the hand of the player
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/main.Card'
-            type: array
-        "403":
-          description: Forbidden
-          schema:
-            type: string
-      summary: Get Hand of the player
-      tags:
-      - player
   /start:
     post:
       description: Start the game

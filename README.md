@@ -26,7 +26,7 @@ This repository contains the source code for a Cards Against Humanity-like game 
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/go-app.git
+    git clone https://github.com/kapiw04/go-app.git
     cd go-app
     ```
 

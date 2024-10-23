@@ -52,9 +52,9 @@ This repository contains the source code for a Cards Against Humanity-like game 
 
 You can build and run the project using Docker.
 
-    ```bash
-    docker compose up
-    ```
+```bash
+docker compose up
+```
 
 The game server will be available at `http://localhost:8080`.
 
